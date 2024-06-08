@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import {
+  useAccount,
+  useConnect,
+} from "wagmi";
+import { injected } from "wagmi/connectors";
+import styles from "./App.module.css";
+import { config } from "./web3/config";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import Main from "./components/Main";
 
-function App() {
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+const App: React.FC = () => {
+  const { isConnected } = useAccount();
+  const { connect } = useConnect({
+    config: config,
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div className={styles.container}>
+      <h1 className={styles.header}>PoC Fake wETH Transferer.</h1>
+      {!isConnected ? (
+        <button
+          className={styles.button}
+          onClick={() => connect({ connector: injected() })}
         >
-          Learn React
-        </a>
-      </header>
+          Connect Wallet
+        </button>
+      ) : (
+        <Main />
+      )}
     </div>
   );
-}
+};
 
 export default App;
